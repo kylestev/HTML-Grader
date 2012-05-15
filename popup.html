@@ -1,0 +1,62 @@
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript">
+    $(function() {
+        var img = $('<img id="loading"/>').attr('src', 'images/loading.gif')
+                            .attr('width', 150)
+                            .attr('height', 150);
+        img.appendTo('body');
+
+        chrome.tabs.executeScript(null, {
+            file: 'js/inject.js'
+        });
+    });
+    
+    chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+        if (request.to == "popup") {
+            $('#loading').fadeOut('400');
+			var total = 0;
+			var totalCounted = 0;
+            setTimeout(function() {
+                var body = $('#resp');
+				var halves = request.payload.split('@');
+                var split = halves[0].split(';');
+                
+                for (var i in split) {
+                    if (i == split.length - 1) continue;
+                    var splits = split[i].split('&');
+					console.log(splits)
+					var counted = parseInt(splits[1]);
+					var required = parseInt(splits[2]);
+					
+                    $('<tr><td>' + splits[0] + '</td><td>' + 
+                        counted + '</td><td>' +
+                        required + '</td></tr>').appendTo(body);
+					
+					counted = counted > required ? required : counted;
+					totalCounted += counted;
+					total += required;
+                }
+				
+                $('<tr><th>Total</td><td>' + 
+					totalCounted + '</td><td>' +
+					total + '</td></tr>').appendTo(body);
+
+                $('#tags').fadeIn('400');
+            }, 400);
+        }
+        
+        sendResponse({});
+    });
+</script>
+<body>
+    <table id="tags" style="width:400px;display:none;">
+        <thead>
+            <tr>
+                <th>Tag Name</th>
+                <th>Number Counted</th>
+                <th>Number Required</th>
+            </tr>
+        </thead>
+        <tbody id="resp"></tbody>
+    </table>
+</body>

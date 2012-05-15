@@ -1,0 +1,23 @@
+{
+	"name": "HTML Grader",
+	"version": "0.1",
+	"description": "Analyzes students' work to a grading rubric allowing easy grading and note making.",
+	"browser_action": {
+		"default_icon": "images/icon.png",
+		"default_title": "Click to grade this site.",
+		"default_popup": "popup.html"
+	},
+    "background_page": "background.html",
+	"permissions": [
+		"file:///*",
+		"popup",
+        "tabs"
+	],
+    "content_scripts": [
+        {
+            "matches": ["file:///*"],
+            "js": ["js/jquery.js", "js/inject.js"]
+        }
+    ],
+	"options_page": "options.html"
+}

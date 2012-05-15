@@ -1,0 +1,47 @@
+<html>
+    <head>
+        <script type="text/javascript" src="js/jquery.js"></script>
+        <script type="text/javascript">
+        chrome.tabs.getSelected(null, function(tab) {
+            chrome.tabs.sendRequest(tab.id, {greeting: "hello"}, function(response) {
+                console.log(response.farewell);
+                alert(response.farewell);
+            });
+        });
+
+        chrome.extension.onRequest.addListener(
+            function(request, sender, sendResponse) {
+                console.log(sender.tab ?
+                        "from a content script:" + sender.tab.url :
+                        "from the extension");
+
+                var body = $("<div id='masscont'>" + request.greeting + "</div>");
+                var contents = body;
+
+                var popup = "";
+				var sels = new Array();
+                for (var i in localStorage) {
+                    try {
+                        if (i.indexOf("sel_") == 0) {
+                            var sp = unescape(localStorage[i]).split(";");
+    						sels.push(sp[0] + "&" + $(sp[0], contents).size() +
+                                        "&" + sp[1] + ";");
+                            console.log(i + ":" + unescape(localStorage[i]).split(";")[0]);
+    					}
+                    } catch (e){}
+                }
+                
+				for (var i in sels) {
+					popup += sels[i];
+				}
+
+                chrome.extension.sendRequest({to:'popup', payload: popup}, function(response) {});
+                sendResponse({});
+        });
+        </script>
+    </head>
+
+    <body>
+    
+    </body>
+</html>
