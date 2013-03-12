@@ -69,4 +69,3 @@ function getRowIndex(row) {
 function getFromStorage(id) {
     return localStorage[id].split(";");
 }
-
